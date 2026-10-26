@@ -36,4 +36,3 @@
 ### Exercice
 1. Réaliser un modèle E/R pour représenter les employés d'une entreprise, les départementsd dans lesquels ils travaillent et les projets auxquels ils sont affcectés.
 2. Réaliser un modèle E/R pour représenter les candidats qui se présentent aux épreuves des formations de MyDigitalSchool et les notes obtenues.
-
