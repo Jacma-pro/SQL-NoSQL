@@ -30,28 +30,32 @@ Une application de **réception d'hôtel**. L'utilisateur ne tape jamais de SQL 
 | SGBDR 1 | **PostgreSQL (Supabase)** | Base principale |
 | SGBDR 2 | **MySQL** (Docker en local) | Cible de la migration |
 | NoSQL | **MongoDB Atlas** (offre gratuite) | Avis clients et journal des actions |
-| API | **Next.js API routes** + `pg` | Requêtes paramétrées, renvoie aussi le SQL exécuté |
-| Web | **Next.js + Tailwind** | Interface de réception |
+| API | **Node.js + Express** + `pg` | Requêtes paramétrées, renvoie aussi le SQL exécuté |
+| Web | **React (Vite) + SCSS** | Interface de réception |
 | Mobile | **Expo (React Native)** | Application « femme de chambre » |
 | Secrets | `.env` (non commité) | Chaînes de connexion |
 
-## Modèle de données (repris de l'E/R du TP 1)
+## Modèle de données (MCD et MLD dans le FigJam « SQL »)
 
 - `categorie` (id, libelle, type_salle_eau [complete/simple], tarif_nuit)
-- `chambre` (numero, etage, categorie_id → categorie, etat [propre/sale/maintenance])
+- `chambre` (numero, etage, etat [propre/sale/maintenance], categorie_id → categorie, hotel_id → hotel)
 - `client` (id, nom, prenom, email, telephone, supprime_le) → **soft delete**
-- `employe` (id, nom, prenom, poste, salaire, responsable_id → employe)
+- `employe` (id, nom, prenom, poste, salaire, hotel_id → hotel, responsable_id → employe)
 - `hotel` (id, nom, adresse, directeur_id → employe)
 - `sejour` (id, client_id, chambre_numero, date_debut, date_fin, statut [reservé/en cours/terminé/annulé])
+- `prestation` (id, libelle, prix_unitaire) : petit-déjeuner, spa, parking…
+- `consommer` (sejour_id, prestation_id, date_conso, quantite) : clé primaire composée
+- `paiement` (id, sejour_id, montant, mode [CB/espèces/virement], date_paiement)
+- `intervention` (id, chambre_numero, employe_id, type [ménage/maintenance], date_intervention, statut [à faire/terminée])
 
-Contraintes à poser : `CHECK (date_fin > date_debut)`, `UNIQUE (email)`, `FOREIGN KEY` avec `ON DELETE RESTRICT`, `CHECK (tarif_nuit > 0)`.
+Contraintes à poser : `CHECK (date_fin > date_debut)`, `UNIQUE (email)`, `FOREIGN KEY` avec `ON DELETE RESTRICT`, `CHECK (tarif_nuit > 0)`, `CHECK (quantite > 0)`, `CHECK (montant > 0)`.
 
 ## Objets SQL à créer
 
-- **Vues** : `v_chambres_disponibles`, `v_occupation_du_jour`, `v_ca_par_categorie`
-- **Fonction** : `chambres_libres(date_debut, date_fin)` (renvoie une table)
-- **Procédures** : `check_in(sejour_id)`, `check_out(sejour_id)` dans une **transaction**. Le check-out passe la chambre à « sale ».
-- **Trigger** : refuser une réservation qui chevauche une autre sur la même chambre
+- **Vues** : `v_chambres_disponibles`, `v_occupation_du_jour`, `v_ca_par_categorie`, `v_facture_sejour` (nuits + prestations − paiements = reste à payer)
+- **Fonctions** : `chambres_libres(date_debut, date_fin)` (renvoie une table), `montant_sejour(sejour_id)` (scalaire)
+- **Procédures** : `check_in(sejour_id)`, `check_out(sejour_id)` dans une **transaction**. Le check-out vérifie que tout est payé, passe la chambre à « sale » et crée une intervention de ménage.
+- **Triggers** : refuser une réservation qui chevauche une autre sur la même chambre ; passer la chambre à « propre » quand une intervention de ménage est terminée
 - **Index** : sur `sejour(chambre_numero, date_debut, date_fin)` et `client(nom)`
 - **Rôles** : `role_reception` (lecture et écriture sur les séjours et les clients), `role_direction` (lecture de tout, y compris les salaires et le CA), `role_menage` (lecture des chambres et mise à jour de leur état uniquement)
 
@@ -81,7 +85,7 @@ Contraintes à poser : `CHECK (date_fin > date_debut)`, `UNIQUE (email)`, `FOREI
 
 - Uniquement des **requêtes paramétrées** (`$1, $2…`), jamais de concaténation. Démo d'une injection sur une version volontairement vulnérable, puis du correctif.
 - Connexion de l'API avec un rôle limité, jamais avec le super-utilisateur
-- Authentification simple avec trois profils (réception, direction, ménage) reliés aux rôles SQL
+- Pas de comptes en base : trois profils (réception, direction, ménage) choisis au lancement de l'appli, chacun relié à son rôle SQL
 - `.env` dans le `.gitignore`
 - Vérifications OWASP de base : XSS (échappement côté React), validation des entrées côté API
 
@@ -100,7 +104,8 @@ sql/
   04_triggers.sql
   05_roles.sql
   mysql/               -- version migrée
-web/                   -- Next.js (front + API)
+api/                   -- Express + pg
+web/                   -- React (Vite) + SCSS
 mobile/                -- Expo
 docs/                  -- MCD, MLD, comparatifs, captures
 ```
@@ -121,7 +126,7 @@ On alterne les rôles pour que chacun sache tout expliquer à l'évaluation indi
 
 | Échéance | Objectif |
 |---|---|
-| **09/11** | MCD/MLD validés, `01_schema.sql` et `02_seed.sql` sur Supabase, squelette Next.js connecté à la base |
+| **09/11** | MCD/MLD validés, `01_schema.sql` et `02_seed.sql` sur Supabase, squelette React + API Express connecté à la base |
 | **17/12** | Vues, fonctions, triggers et rôles terminés. Web : tableau de bord, réservation, séjours et panneau SQL fonctionnels |
 | **18/12** (autonomie) | MongoDB (avis et journal), application mobile minimale, sécurité (injection, rôles, `.env`) |
 | **27/01** | Migration MySQL, sauvegarde/restauration, page direction, documentation et démo |
