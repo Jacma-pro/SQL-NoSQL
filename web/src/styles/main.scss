@@ -40,6 +40,15 @@ picture {
   background: $bordure;
 }
 
+// Texte réservé à une taille d'écran (libellés longs / courts).
+.desktop-seulement {
+  @include mobile { display: none; }
+}
+.mobile-seulement {
+  display: none;
+  @include mobile { display: inline; }
+}
+
 // Surtitre bleu en capitales (« LE BON ENDROIT, TOUT SIMPLEMENT », « GRENOBLE »…).
 .surtitre {
   font: 700 11px/normal $police;

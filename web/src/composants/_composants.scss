@@ -54,6 +54,13 @@
 
   &--succes { background: $succes-fond; color: $succes-texte; }
   &--premium { background: $premium-fond; color: $premium-texte; }
+  &--info { background: $primaire-doux; color: $info-texte; }
+}
+
+// Badge cliquable (ex. option de tri) : on retire l'apparence native du bouton.
+button.badge {
+  border: 0;
+  cursor: pointer;
 }
 
 // --- Signature --------------------------------------------------------------

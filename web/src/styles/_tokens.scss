@@ -12,7 +12,8 @@ $blanc: #ffffff;
 
 $primaire: #3b82f6;       // boutons, surtitres
 $primaire-fonce: #2563eb; // survol des boutons (non précisé dans la maquette)
-$primaire-doux: #eff6ff;  // bandeau des engagements
+$primaire-doux: #eff6ff;  // bandeau des engagements, bandeau de recherche
+$info-texte: #1d4ed8;     // texte des badges bleus
 
 $succes-fond: #f0fdf4;
 $succes-texte: #166534;
@@ -24,7 +25,9 @@ $premium-bordure: #eab308;
 $police: 'Inter', system-ui, sans-serif;
 
 // --- Formes -----------------------------------------------------------------
+$rayon-mini: 4px;    // cases à cocher, curseur de prix
 $rayon-petit: 8px;   // boutons, champs
+$rayon-moyen: 12px;  // panneau de filtres
 $rayon-grand: 16px;  // cartes, photos
 $rayon-pilule: 100px; // badges
 $ombre-carte: 0 5px 18px rgba(15, 23, 42, 0.04);

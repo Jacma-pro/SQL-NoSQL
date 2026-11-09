@@ -546,3 +546,311 @@
     font: 400 11px/1.5 $police;
   }
 }
+
+// ============================================================================
+// Écran Résultats (maquette : Résultats · Desktop / Mobile)
+// ============================================================================
+
+// --- Bandeau de recherche (fil d'Ariane + formulaire prérempli) -------------
+.bandeau-recherche {
+  @include marges-laterales;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 32px;
+  padding-bottom: 32px;
+  background: $primaire-doux;
+
+  @include mobile {
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+}
+
+.fil-ariane {
+  font: 400 12px/1.5 $police;
+  color: $encre-attenuee;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
+}
+
+// --- Zone des résultats -----------------------------------------------------
+.resultats {
+  @include marges-laterales;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding-top: 48px;
+  padding-bottom: 48px;
+
+  @include mobile {
+    padding-top: 32px;
+    padding-bottom: 32px;
+  }
+
+  &__introduction {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__titre {
+    font: 600 38px/1.15 $police;
+    letter-spacing: -0.7px;
+    @include mobile { font-size: 29px; }
+  }
+
+  &__criteres {
+    font: 400 14px/1.5 $police;
+    color: $encre-attenuee;
+  }
+
+  // Desktop : filtres à gauche (264 px), offres à droite.
+  &__corps {
+    display: flex;
+    align-items: flex-start;
+    gap: 32px;
+
+    @include mobile {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 20px;
+    }
+  }
+
+  &__filtres {
+    flex: 0 0 264px;
+    @include mobile { flex-basis: auto; }
+  }
+
+  &__liste {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 22px;
+    min-width: 0;
+    scroll-margin-top: 16px; // le bouton « Afficher les chambres » y descend
+  }
+
+  &__outils {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: -2px; // la maquette met 20 px entre outils et cartes (22 entre cartes)
+  }
+
+  &__compteur {
+    font: 600 15px/1.5 $police;
+    @include mobile { font-size: 13px; }
+  }
+
+  &__tri {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__tri-libelle,
+  &__tri-option {
+    font: 400 12px/1.5 $police;
+    color: $encre-attenuee;
+    @include mobile { font-size: 11px; }
+  }
+
+  &__tri-option {
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    &:hover { color: $encre; }
+  }
+
+  &__message {
+    font: 400 14px/1.5 $police;
+    color: $encre-attenuee;
+
+    &--erreur { color: $premium-texte; }
+  }
+
+  &__note {
+    font: 400 12px/1.5 $police;
+    color: $encre-attenuee;
+  }
+}
+
+// --- Panneau de filtres -----------------------------------------------------
+.filtres {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  border: 1px solid $bordure;
+  border-radius: $rayon-moyen;
+  background: $blanc;
+
+  &__entete {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  &__titre {
+    font: 600 15px/1.5 $police;
+  }
+
+  &__reinitialiser {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: 400 11px/1.5 $police;
+    color: $primaire;
+    cursor: pointer;
+  }
+
+  &__groupe {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+
+  &__libelle {
+    padding: 0;
+    margin-bottom: 0;
+    font: 600 12px/1.5 $police;
+    color: $encre;
+  }
+
+  // <legend> ignore le `gap` du fieldset : on lui redonne l'espace à la main.
+  legend.filtres__libelle { margin-bottom: 10px; }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font: 400 12px/1.5 $police;
+    cursor: pointer;
+
+    // Case à cocher de la maquette : 16 px, bordure grise, coins de 4 px.
+    input {
+      appearance: none;
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      border: 1px solid $bordure;
+      border-radius: $rayon-mini;
+      background: $blanc;
+      cursor: pointer;
+
+      &:checked {
+        border-color: $primaire;
+        // Coche blanche dessinée en SVG, sur fond bleu.
+        background: $primaire
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5l2.5 2.5L12 5.5' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+          center / 12px no-repeat;
+      }
+
+      &:focus-visible {
+        outline: 2px solid $primaire;
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  // Curseur de prix : barre bleue de 4 px, comme la maquette.
+  &__curseur {
+    width: 100%;
+    margin: 6px 0; // place pour la poignée
+    accent-color: $primaire;
+    cursor: pointer;
+  }
+
+  &__bornes {
+    display: flex;
+    justify-content: space-between;
+    font: 400 12px/1.5 $police;
+  }
+
+  // Le bouton « Afficher les N chambres » n'existe que sur mobile.
+  &__afficher {
+    display: none;
+    @include mobile { display: block; }
+  }
+}
+
+// --- Carte d'offre ----------------------------------------------------------
+.carte-offre {
+  display: flex;
+  overflow: hidden;
+  border: 1px solid $bordure;
+  border-radius: $rayon-grand;
+  background: $blanc;
+  box-shadow: $ombre-carte;
+
+  &--premium { border-color: $premium-bordure; }
+
+  @include mobile { flex-direction: column; }
+
+  &__photo {
+    display: block;
+    flex: 0 0 310px;
+    width: 310px;
+    // Pas de hauteur fixe : la photo s'étire à la hauteur du texte (flex).
+    object-fit: cover;
+
+    @include mobile {
+      flex-basis: auto;
+      width: 100%;
+      height: 225px;
+    }
+  }
+
+  &__infos {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+    padding: 22px;
+  }
+
+  &__entete {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__nom {
+    font: 600 23px/normal $police;
+  }
+
+  &__detail {
+    font: 400 12px/1.5 $police;
+    color: $encre-attenuee;
+  }
+
+  &__tarif {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  &__prix {
+    font: 600 24px/normal $police;
+  }
+
+  &__unite {
+    font: 400 12px/1.5 $police;
+    color: $encre-attenuee;
+  }
+}

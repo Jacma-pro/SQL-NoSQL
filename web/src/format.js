@@ -33,6 +33,19 @@ export function dateIso(date) {
   return `${date.getFullYear()}-${mois}-${jour}`;
 }
 
+/** "2026-11-09" → "09/11/2026" (sans passer par Date : pas de décalage de fuseau). */
+export function formaterDate(iso) {
+  const [annee, mois, jour] = iso.split('-');
+  return `${jour}/${mois}/${annee}`;
+}
+
+/** Nombre de nuits entre deux dates "AAAA-MM-JJ" (départ − arrivée). */
+export function nombreNuits(arrivee, depart) {
+  // Calcul en UTC pour ne pas être faussé par le passage à l'heure d'hiver.
+  const UN_JOUR = 24 * 60 * 60 * 1000;
+  return Math.round((Date.parse(`${depart}T00:00:00Z`) - Date.parse(`${arrivee}T00:00:00Z`)) / UN_JOUR);
+}
+
 /** Aujourd'hui + n jours. */
 export function dansNJours(n) {
   const date = new Date();

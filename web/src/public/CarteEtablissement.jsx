@@ -1,5 +1,6 @@
 // Carte d'un hôtel : photo, nombre de chambres libres, ville, nom, adresse.
 // Toute la carte est un lien vers la recherche de chambres dans cet hôtel.
+import { Link } from 'react-router-dom';
 import Badge from '../composants/Badge.jsx';
 import Icone from '../composants/Icone.jsx';
 import Photo from '../composants/Photo.jsx';
@@ -13,7 +14,7 @@ export default function CarteEtablissement({ hotel }) {
   const n = hotel.chambres_disponibles;
 
   return (
-    <a href={`/resultats?hotel=${hotel.id_hotel}`} className="carte-etablissement">
+    <Link to={`/resultats?hotel=${hotel.id_hotel}`} className="carte-etablissement">
       <div className="carte-etablissement__vue">
         {photo && (
           <Photo
@@ -36,6 +37,6 @@ export default function CarteEtablissement({ hotel }) {
         </div>
         <Icone src={iconeFleche} taille={26} />
       </div>
-    </a>
+    </Link>
   );
 }

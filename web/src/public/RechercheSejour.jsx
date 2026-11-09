@@ -1,9 +1,10 @@
-// Formulaire « Recherche de séjour » de l'accueil.
+// Formulaire « Recherche de séjour », partagé par l'accueil et les résultats.
 //
-// C'est un formulaire HTML classique (method="get") : à la validation, le
-// navigateur ouvre /resultats?hotel=1&arrivee=…&depart=…&voyageurs=1.
-// L'écran Résultats lira ces paramètres (étape suivante de la maquette).
+// À la validation, on ouvre /resultats?hotel=1&arrivee=…&depart=…&voyageurs=1.
+// Sur l'écran Résultats, le formulaire est prérempli avec ces mêmes paramètres
+// (prop `initial`).
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Bouton from '../composants/Bouton.jsx';
 import Icone from '../composants/Icone.jsx';
 import { dateIso, dansNJours } from '../format.js';
@@ -13,44 +14,41 @@ import iconeVoyageur from '../assets/icones/user-round.svg';
 import iconeRecherche from '../assets/icones/search.svg';
 
 // La base ne stocke pas encore la capacité des chambres : ce choix est
-// transmis à l'écran suivant mais ne filtre rien pour l'instant.
+// transmis dans l'adresse mais ne filtre rien pour l'instant.
 const CHOIX_VOYAGEURS = [1, 2, 3, 4];
 
-export default function RechercheSejour({ hotels }) {
+export default function RechercheSejour({ hotels, initial = {} }) {
+  const navigate = useNavigate();
   const aujourdhui = dateIso(new Date());
-  const [idHotel, setIdHotel] = useState('');
+  const [idHotel, setIdHotel] = useState(initial.hotel ?? '');
   // Par défaut : arrivée aujourd'hui, départ dans 3 nuits (comme la maquette).
-  const [arrivee, setArrivee] = useState(aujourdhui);
-  const [depart, setDepart] = useState(dateIso(dansNJours(3)));
-  const [voyageurs, setVoyageurs] = useState(1);
+  const [arrivee, setArrivee] = useState(initial.arrivee ?? aujourdhui);
+  const [depart, setDepart] = useState(initial.depart ?? dateIso(dansNJours(3)));
+  const [voyageurs, setVoyageurs] = useState(initial.voyageurs ?? 1);
   const [erreur, setErreur] = useState(null);
 
-  // Tant que les hôtels ne sont pas chargés, on présélectionne le premier.
+  // Tant qu'aucun hôtel n'est choisi, on présélectionne le premier de la liste.
   const hotelChoisi = idHotel || (hotels[0] ? String(hotels[0].id_hotel) : '');
 
-  function valider(evenement) {
+  function rechercher(evenement) {
+    evenement.preventDefault();
     // Même règle que la contrainte CHECK (date_fin > date_debut) de la base.
     if (depart <= arrivee) {
-      evenement.preventDefault();
       setErreur('La date de départ doit être après la date d’arrivée.');
+      return;
     }
+    const parametres = new URLSearchParams({ hotel: hotelChoisi, arrivee, depart, voyageurs });
+    navigate(`/resultats?${parametres}`);
   }
 
   return (
-    <form
-      id="recherche"
-      className="recherche"
-      action="/resultats"
-      method="get"
-      onSubmit={valider}
-    >
+    <form id="recherche" className="recherche" onSubmit={rechercher}>
       <div className="critere">
         <label htmlFor="recherche-hotel" className="critere__libelle">Établissement</label>
         <div className="critere__valeur">
           <Icone src={iconeLieu} taille={17} />
           <select
             id="recherche-hotel"
-            name="hotel"
             value={hotelChoisi}
             onChange={(e) => setIdHotel(e.target.value)}
           >
@@ -70,7 +68,6 @@ export default function RechercheSejour({ hotels }) {
             <input
               id="recherche-arrivee"
               type="date"
-              name="arrivee"
               min={aujourdhui}
               value={arrivee}
               onChange={(e) => { setArrivee(e.target.value); setErreur(null); }}
@@ -85,7 +82,6 @@ export default function RechercheSejour({ hotels }) {
             <input
               id="recherche-depart"
               type="date"
-              name="depart"
               min={arrivee}
               value={depart}
               onChange={(e) => { setDepart(e.target.value); setErreur(null); }}
@@ -101,7 +97,6 @@ export default function RechercheSejour({ hotels }) {
           <Icone src={iconeVoyageur} taille={17} />
           <select
             id="recherche-voyageurs"
-            name="voyageurs"
             value={voyageurs}
             onChange={(e) => setVoyageurs(Number(e.target.value))}
           >

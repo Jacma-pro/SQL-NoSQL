@@ -35,7 +35,7 @@ export default function CarteChambre({ categorie, premium = false }) {
           <span className="carte-chambre__unite">/ nuit</span>
         </p>
 
-        <Bouton variante="secondaire" pleineLargeur href={`/chambres/${categorie.id_categorie}`}>
+        <Bouton variante="secondaire" pleineLargeur to={`/chambres/${categorie.id_categorie}`}>
           Voir les détails
         </Bouton>
       </div>
