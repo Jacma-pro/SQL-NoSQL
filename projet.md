@@ -75,6 +75,42 @@ Contraintes à poser : `CHECK (date_fin > date_debut)`, `UNIQUE (email)`, `FOREI
 - Liste des chambres à nettoyer, bouton « Chambre propre » qui fait un `UPDATE` de l'état
 - Ajout d'un avis ou d'un incident sur une chambre, stocké dans MongoDB
 
+## Fonctionnalités en plus (à choisir)
+
+Idées en dehors du CRUD classique. Cochez celles qui vous intéressent et mettez votre prénom à côté. ⭐ = conseillé en priorité (bon rapport effort / effet en démo).
+
+### Réception
+
+- [ ] ⭐ **Planning des chambres** : frise façon Gantt, chambres en lignes, jours en colonnes, séjours en barres colorées sur 2 semaines. *SQL : `generate_series` sur les dates, jointure sur des intervalles.*
+- [ ] ⭐ **Surclassement automatique** : si la catégorie demandée est pleine, proposer la catégorie supérieure la moins chère encore libre. *SQL : sous-requête, `ORDER BY tarif LIMIT 1`.*
+- [ ] ⭐ **Changer de chambre en cours de séjour** : clôturer le séjour en cours et en ouvrir un nouveau dans une autre chambre. *SQL : transaction, tout est annulé si une étape échoue.*
+- [ ] **Annulation avec frais** : 0 % si on annule plus de 7 jours avant, 50 % entre 2 et 7 jours, 100 % sinon. *SQL : `CASE` sur une différence de dates.*
+- [ ] **Note détaillée au check-out** : nuits + prestations − paiements, affichée et imprimable. *SQL : vue `v_facture_sejour`.*
+
+### Clients
+
+- [ ] **Statut fidélité** : badge « Habitué » ou « VIP » selon le nombre de séjours ou le total dépensé. *SQL : `GROUP BY` + `HAVING` + `CASE`.*
+- [ ] **Fusion de doublons** : rattacher tous les séjours de deux fiches à une seule, l'autre passe en soft delete. *SQL : transaction avec plusieurs `UPDATE` sur les clés étrangères.*
+- [ ] **Anonymisation RGPD** : effacer nom, email et téléphone en gardant les séjours pour les statistiques. *Lien avec la partie « vie privée » du cours (page 4 du PDF).*
+- [ ] **Import CSV de clients** : charger une liste de clients d'un coup. *SQL : insertion en masse (page 11 du PDF).*
+
+### Direction
+
+- [ ] **Tableau de bord** : taux d'occupation par mois, CA par catégorie, prestations les plus vendues. *SQL : agrégations.*
+- [ ] ⭐ **Classement et évolution** : top 5 des clients, CA du mois comparé au mois précédent. *SQL : fonctions de fenêtrage `RANK()` et `LAG()`.*
+- [ ] **Prévision** : taux de remplissage des 30 prochains jours. *SQL : `generate_series` + `LEFT JOIN`.*
+
+### Ménage (mobile)
+
+- [ ] **Répartition automatique** : le matin, répartir équitablement les chambres à faire entre les employés du ménage. *SQL : fonction, `ROW_NUMBER()` modulo le nombre d'employés.*
+- [ ] **Chambre bloquée** : une chambre en maintenance ne peut pas être réservée. *SQL : trigger.*
+- [ ] **Signalement avec photo** : incident (« fuite salle de bain ») avec photo. *MongoDB : document à schéma libre.*
+
+### Vitrine SQL (pour la soutenance)
+
+- [ ] ⭐ **`EXPLAIN` et temps d'exécution dans le panneau SQL** : générer 50 000 séjours, lancer la recherche de chambres libres, puis montrer le temps avant et après la création de l'index.
+- [ ] **Démo d'injection SQL** : un bouton « version vulnérable » à côté de la « version sécurisée », sur le même formulaire de recherche.
+
 ## Partie NoSQL (MongoDB)
 
 - Collection `avis` : note, commentaire, tags, photos éventuelles. Le schéma est libre, ce qui justifie le NoSQL.
