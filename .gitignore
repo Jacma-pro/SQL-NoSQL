@@ -1,0 +1,10 @@
+# Instructions locales pour l'assistant, non versionnées
+CLAUDE.md
+
+# Secrets : seules les valeurs factices de .env.example sont versionnées
+.env
+.env.*
+!.env.example
+
+# Dépendances
+node_modules/
