@@ -645,3 +645,294 @@
   font: 400 11px/1.5 $police;
   color: $encre-attenuee;
 }
+
+// ============================================================================
+// Écran Fiche client (maquette : Fiche client · Réception)
+// ============================================================================
+.fiche-client {
+  display: flex;
+  align-items: flex-start;
+  gap: 22px;
+
+  @include tablette {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  &__recherche {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+
+    // Le badge « 1 fiche trouvée » est centré sur le champ (48 px) comme la maquette.
+    > .badge { margin-bottom: 14px; }
+  }
+
+  &__champ {
+    flex: 0 1 510px;
+  }
+
+  &__resultats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  &__dossier {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+  }
+}
+
+// --- Colonne profil ---------------------------------------------------------
+.profil-client {
+  display: flex;
+  flex: 0 0 315px;
+  flex-direction: column;
+  gap: 20px;
+
+  @include tablette { flex-basis: auto; }
+
+  &__carte { gap: 18px; }
+
+  &__identite {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  // Pastille ronde avec les initiales (« CL »).
+  &__initiales {
+    display: flex;
+    flex: 0 0 52px;
+    align-items: center;
+    justify-content: center;
+    height: 52px;
+    border-radius: $rayon-pilule;
+    background: $primaire-doux;
+    font: 600 20px/normal $police;
+    color: $primaire;
+  }
+
+  &__statut {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 7px;
+  }
+
+  &__depuis {
+    font: 400 10px/1.5 $police;
+    color: $encre-attenuee;
+  }
+
+  &__coordonnees {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    font: 400 12px/1.5 $police;
+    overflow-wrap: anywhere; // une adresse e-mail longue ne déborde pas
+  }
+
+  &__rubrique {
+    font-size: 11px;
+    color: $encre-attenuee;
+  }
+
+  &__ligne { display: block; }
+
+  &__bilan {
+    font: 400 12px/1.5 $police;
+  }
+
+  // Encadré bleu clair « Les petites attentions ».
+  &__attentions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    border-radius: $rayon-moyen;
+    background: $primaire-doux;
+    font: 400 12px/1.5 $police;
+    color: $encre-attenuee;
+  }
+
+  &__attentions-titre {
+    font: 600 17px/1.15 $police;
+    letter-spacing: -0.7px;
+    color: $encre;
+  }
+}
+
+// --- Réservation à venir ----------------------------------------------------
+.reservation-a-venir {
+  gap: 18px;
+
+  &__detail {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  &__texte {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__chambre {
+    font: 600 16px/1.5 $police;
+  }
+
+  &__lignes {
+    font: 400 12px/1.5 $police;
+    color: $encre-attenuee;
+
+    span { display: block; }
+
+    &--petit { font-size: 11px; }
+  }
+}
+
+// --- Historique des séjours -------------------------------------------------
+.historique {
+  gap: 18px;
+
+  &__entete,
+  &__ligne {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__entete {
+    font: 400 10px/1.5 $police;
+    color: $encre-attenuee;
+  }
+
+  &__liste {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  // Chaque ligne est précédée d'un trait.
+  &__ligne {
+    padding-top: 12px;
+    border-top: 1px solid $bordure;
+  }
+
+  &__reference {
+    flex: 0 0 140px;
+  }
+
+  &__ligne &__reference {
+    font: 400 9px/normal $police-mono;
+    color: $encre-attenuee;
+  }
+
+  &__chambre {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  &__numero {
+    font: 600 12px/1.5 $police;
+  }
+
+  &__dates {
+    font: 400 10px/1.5 $police;
+    color: $encre-attenuee;
+  }
+
+  &__total {
+    flex: 0 0 80px;
+  }
+
+  &__ligne &__total {
+    font: 400 12px/normal $police-mono;
+  }
+
+  &__statut {
+    flex: 0 0 78px;
+  }
+
+  @include mobile {
+    &__reference { display: none; }
+  }
+}
+
+// --- Archivage (soft delete) -------------------------------------------------
+.archivage {
+  gap: 16px;
+  padding: 20px;
+
+  &__action {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  &__description {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 7px;
+    font: 400 11px/1.5 $police;
+    color: $encre-attenuee;
+  }
+
+  &__titre {
+    font: 600 18px/1.15 $police;
+    letter-spacing: -0.7px;
+    color: $encre;
+  }
+
+  // Encadré gris : aperçu (fiche active) ou état réel (fiche archivée).
+  &__etat {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: $rayon-petit;
+    background: $fond;
+  }
+
+  &__etat-texte {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__etat-rubrique,
+  &__etat-detail {
+    font: 400 10px/1.5 $police;
+    color: $encre-attenuee;
+  }
+
+  &__etat-nom {
+    font: 600 12px/1.5 $police;
+  }
+
+  &__restaurer {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: 400 11px/1.5 $police;
+    color: $primaire;
+    cursor: pointer;
+
+    &--apercu { cursor: default; }
+  }
+}

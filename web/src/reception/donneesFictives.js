@@ -111,6 +111,39 @@ export async function chargerTableauDeBord(idHotel) {
   };
 }
 
+// Prestations consommées sur un séjour (table consommer) — ici seulement pour
+// la réservation à venir de Camille Lefèvre, comme dans la maquette.
+SEJOURS[1][0].prestations = [
+  { libelle: 'Petit-déjeuner', montant: 42 },
+  { libelle: 'Parking', montant: 36 },
+];
+
+// Tarif par nuit de chaque catégorie (table categorie du seed).
+const TARIFS = { Simple: 75, Confort: 110, 'Supérieure': 150, Suite: 240 };
+
+// Clients (table client). `supprime_le` : null = fiche active, sinon date
+// d'archivage (soft delete). ⚠ `adresse` et `preferences` n'existent PAS dans
+// le schéma actuel : la maquette les affiche, à valider en binôme.
+const CLIENTS = [
+  {
+    id_client: 1, prenom: 'Camille', nom: 'Lefèvre', email: 'camille.lefevre@exemple.fr',
+    telephone: '+33 6 12 34 56 78', adresse: ['18 rue des Arts', '69002 Lyon, France'],
+    preferences: 'Préfère une baignoire et une chambre calme. Petit-déjeuner et parking pour le séjour à venir.',
+    supprime_le: null,
+  },
+  { id_client: 2, prenom: 'Julien', nom: 'Moreau', email: 'julien.moreau@exemple.fr', telephone: '+33 6 23 45 67 89', supprime_le: null },
+  { id_client: 3, prenom: 'Inès', nom: 'Da Silva', email: 'ines.dasilva@exemple.fr', telephone: '+33 6 34 56 78 90', supprime_le: null },
+  { id_client: 4, prenom: 'Marc', nom: 'Bernard', email: 'marc.bernard@exemple.fr', telephone: '+33 6 45 67 89 01', supprime_le: null },
+  { id_client: 5, prenom: 'Paul', nom: 'Girard', email: 'paul.girard@exemple.fr', telephone: '+33 6 56 78 90 12', supprime_le: null },
+  { id_client: 6, prenom: 'Léa', nom: 'Fontaine', email: 'lea.fontaine@exemple.fr', telephone: '+33 6 67 89 01 23', supprime_le: null },
+  { id_client: 7, prenom: 'Sophie', nom: 'Marchand', email: 'sophie.marchand@exemple.fr', telephone: '+33 6 78 90 12 34', supprime_le: null },
+  { id_client: 8, prenom: 'Thomas', nom: 'Rey', email: 'thomas.rey@exemple.fr', telephone: '+33 6 89 01 23 45', supprime_le: null },
+  { id_client: 9, prenom: 'Alice', nom: 'Perrin', email: 'alice.perrin@exemple.fr', telephone: '+33 6 90 12 34 56', supprime_le: jour(-30) },
+  { id_client: 10, prenom: 'Hugo', nom: 'Petit', email: 'hugo.petit@exemple.fr', telephone: '+33 6 01 23 45 67', supprime_le: null },
+  { id_client: 11, prenom: 'Sarah', nom: 'Lambert', email: 'sarah.lambert@exemple.fr', telephone: '+33 7 12 34 56 78', supprime_le: null },
+  { id_client: 12, prenom: 'Nina', nom: 'Roux', email: 'nina.roux@exemple.fr', telephone: '+33 7 23 45 67 89', supprime_le: null },
+];
+
 // Pour comparer sans tenir compte des majuscules ni des accents (« lefevre » = « Lefèvre »).
 function simplifier(texte) {
   return String(texte).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
@@ -155,4 +188,57 @@ export async function chargerSejours(idHotel, { recherche = '', du, au, statut =
     total: filtres.length,
     totalTousStatuts: correspondants.length,
   };
+}
+
+/**
+ * Recherche des fiches ACTIVES par nom ou prénom (l'archivage retire une
+ * fiche de la liste active : WHERE supprime_le IS NULL AND nom ILIKE …).
+ */
+export async function chercherClients(texte) {
+  const motif = simplifier(texte.trim());
+  return CLIENTS
+    .filter((c) => c.supprime_le === null)
+    .filter((c) => !motif || simplifier(`${c.prenom} ${c.nom}`).includes(motif))
+    .sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+}
+
+/**
+ * Fiche d'un client, archivée ou non, avec tous ses séjours (tous hôtels
+ * confondus). Pour chaque séjour : hôtel, tarif de la nuit, salle d'eau et
+ * état actuel de la chambre. null si le client n'existe pas.
+ */
+export async function chargerFicheClient(idClient) {
+  const client = CLIENTS.find((c) => c.id_client === idClient);
+  if (!client) return null;
+
+  const sejours = [];
+  for (const hotel of ETABLISSEMENTS) {
+    for (const s of SEJOURS[hotel.id_hotel] ?? []) {
+      if (s.id_client !== idClient) continue;
+      const chambre = (CHAMBRES[hotel.id_hotel] ?? []).find((c) => c.numero === s.numero);
+      sejours.push({
+        ...s,
+        hotel: hotel.nom,
+        tarif_nuit: TARIFS[s.categorie],
+        salleEau: chambre?.salleEau ?? null,
+        chambre, // état actuel de la chambre (pour la réservation à venir)
+      });
+    }
+  }
+  sejours.sort((a, b) => b.arrivee.localeCompare(a.arrivee));
+  return { client: { ...client }, sejours };
+}
+
+// Archivage (soft delete) et restauration. En base, ce sera :
+//   UPDATE client SET supprime_le = now()  WHERE id_client = $1
+//   UPDATE client SET supprime_le = NULL   WHERE id_client = $1
+// Ici, la modification ne vit qu'en mémoire : elle disparaît au rechargement.
+export async function archiverClient(idClient) {
+  const client = CLIENTS.find((c) => c.id_client === idClient);
+  if (client) client.supprime_le = jour(0);
+}
+
+export async function restaurerClient(idClient) {
+  const client = CLIENTS.find((c) => c.id_client === idClient);
+  if (client) client.supprime_le = null;
 }
