@@ -32,6 +32,13 @@ picture {
   display: contents;
 }
 
+// Sinon, avec `display: contents`, <source> devient un élément (vide) des
+// mises en page flex et décale les photos d'un `gap`. Le navigateur choisit
+// toujours la bonne source : ce choix ne dépend pas du CSS.
+picture > source {
+  display: none;
+}
+
 .separateur {
   width: 100%;
   height: 1px;

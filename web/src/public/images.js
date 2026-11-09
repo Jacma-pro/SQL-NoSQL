@@ -15,6 +15,28 @@ import categorie3Mobile from '../assets/images/categorie-3-mobile.jpg';
 import categorie4Desktop from '../assets/images/categorie-4-desktop.jpg';
 import categorie4Mobile from '../assets/images/categorie-4-mobile.jpg';
 
+// Galerie de la fiche chambre : la maquette ne la dessine que pour la
+// Supérieure (catégorie 3). Les autres catégories affichent leur photo seule.
+import superieurePrincipaleDesktop from '../assets/images/superieure-principale-desktop.jpg';
+import superieurePrincipaleMobile from '../assets/images/superieure-principale-mobile.jpg';
+import superieureBainDesktop from '../assets/images/superieure-bain-desktop.jpg';
+import superieureBainMobile from '../assets/images/superieure-bain-mobile.jpg';
+import superieurePiscineDesktop from '../assets/images/superieure-piscine-desktop.jpg';
+import superieurePiscineMobile from '../assets/images/superieure-piscine-mobile.jpg';
+import superieureRecapDesktop from '../assets/images/superieure-recap-desktop.jpg';
+import superieureRecapMobile from '../assets/images/superieure-recap-mobile.jpg';
+
+export const GALERIES_CATEGORIES = {
+  3: {
+    principale: { desktop: superieurePrincipaleDesktop, mobile: superieurePrincipaleMobile },
+    vues: [
+      { desktop: superieureBainDesktop, mobile: superieureBainMobile, alt: 'Salle de bain avec baignoire' },
+      { desktop: superieurePiscineDesktop, mobile: superieurePiscineMobile, alt: 'Piscine de l’hôtel' },
+    ],
+    recapitulatif: { desktop: superieureRecapDesktop, mobile: superieureRecapMobile },
+  },
+};
+
 export const PHOTOS_HOTELS = {
   1: { desktop: hotel1Desktop, mobile: hotel1Mobile },
   2: { desktop: hotel2Desktop, mobile: hotel2Mobile },

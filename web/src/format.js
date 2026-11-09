@@ -2,15 +2,21 @@
 
 // pg renvoie les NUMERIC sous forme de texte ("75.00") pour ne pas perdre de
 // précision : on le convertit en nombre seulement pour l'affichage.
-const formatPrix = new Intl.NumberFormat('fr-FR', {
+const formatPrixRond = new Intl.NumberFormat('fr-FR', {
   style: 'currency',
   currency: 'EUR',
   maximumFractionDigits: 0,
 });
+const formatPrixCentimes = new Intl.NumberFormat('fr-FR', {
+  style: 'currency',
+  currency: 'EUR',
+  minimumFractionDigits: 2,
+});
 
-/** "75.00" → "75 €" */
+/** "75.00" → "75 €", mais "9.50" → "9,50 €" (on garde les centimes s'il y en a). */
 export function formaterPrix(montant) {
-  return formatPrix.format(Number(montant));
+  const nombre = Number(montant);
+  return Number.isInteger(nombre) ? formatPrixRond.format(nombre) : formatPrixCentimes.format(nombre);
 }
 
 /**

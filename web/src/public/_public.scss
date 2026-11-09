@@ -854,3 +854,355 @@
     color: $encre-attenuee;
   }
 }
+
+// ============================================================================
+// Écran Fiche chambre (maquette : Fiche chambre · Desktop / Mobile)
+// ============================================================================
+.fiche {
+  @include marges-laterales;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding-top: 24px;
+  padding-bottom: 60px;
+
+  &__retour {
+    font: 600 14px/1.5 $police;
+    color: $primaire;
+    text-decoration: none;
+  }
+
+  // Galerie + (sur mobile) la ligne « 150 € / nuit · Réserver ».
+  &__galerie {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__acces-reservation {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    @include mobile { display: flex; }
+  }
+
+  &__prix-nuit {
+    font: 600 15px/1.5 $police;
+  }
+
+  // Desktop : présentation à gauche, récapitulatif fixe de 390 px à droite.
+  &__corps {
+    display: flex;
+    align-items: flex-start;
+    gap: 64px;
+
+    @include tablette { gap: 40px; }
+    @include mobile {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 32px;
+    }
+  }
+
+  &__presentation {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 30px;
+    min-width: 0;
+  }
+
+  &__identite {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+  }
+
+  &__titre {
+    font: 600 42px/1.15 $police;
+    letter-spacing: -0.7px;
+    @include mobile { font-size: 32px; }
+  }
+
+  &__attributs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  &__description {
+    font: 400 15px/1.5 $police;
+    color: $encre-attenuee;
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__sous-titre {
+    font: 600 24px/1.15 $police;
+    letter-spacing: -0.7px;
+  }
+
+  &__texte {
+    font: 400 13px/1.5 $police;
+    color: $encre-attenuee;
+  }
+
+  // La colonne reste visible pendant le défilement (desktop uniquement).
+  &__reservation {
+    position: sticky;
+    top: 24px;
+    display: flex;
+    flex: 0 0 390px;
+    flex-direction: column;
+    gap: 16px;
+
+    @include tablette { flex-basis: 340px; }
+    @include mobile {
+      position: static;
+      flex-basis: auto;
+    }
+  }
+
+  &__annulation {
+    font: 400 11px/1.5 $police;
+    color: $encre-attenuee;
+  }
+}
+
+// --- Galerie ----------------------------------------------------------------
+.galerie {
+  display: flex;
+  gap: 12px;
+
+  @include mobile {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__principale {
+    display: block;
+    flex: 0 0 65.6%; // 840 px sur 1280 dans la maquette
+    width: 65.6%;
+    height: 460px;
+    border-radius: $rayon-grand;
+    object-fit: cover;
+
+    @include mobile {
+      flex-basis: auto;
+      width: 100%;
+      height: 280px;
+    }
+  }
+
+  &--seule &__principale {
+    flex-basis: 100%;
+    width: 100%;
+  }
+
+  &__vues {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+
+    @include mobile {
+      flex-direction: row;
+      gap: 8px;
+    }
+  }
+
+  &__vue {
+    display: block;
+    width: 100%;
+    height: 224px; // (460 − 12) / 2
+    border-radius: $rayon-grand;
+    object-fit: cover;
+
+    @include mobile {
+      flex: 1 1 0;
+      min-width: 0;
+      height: 110px;
+    }
+  }
+}
+
+// --- Prestations ------------------------------------------------------------
+.prestations {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &__ligne {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    font: 400 12px/1.5 $police;
+  }
+
+  &__prix {
+    font-size: 11px;
+    color: $encre-attenuee;
+  }
+}
+
+// --- Plan de situation indicatif (dessin CSS de la maquette) ---------------
+.plan {
+  position: relative;
+  height: 225px;
+  overflow: hidden;
+  border-radius: $rayon-moyen;
+  background: $plan-fond;
+
+  // Tous les éléments du dessin sont placés en absolu, comme dans la maquette.
+  > * { position: absolute; }
+
+  &__parc {
+    left: 15px; top: 18px;
+    width: 95px; height: 92px;
+    border-radius: 18px;
+    background: $plan-parc;
+  }
+
+  &__ilot {
+    border-radius: 9px;
+    background: $plan-ilot;
+
+    &--haut { left: 215px; top: 10px; width: 110px; height: 70px; }
+    &--bas { left: 30px; top: 146px; width: 150px; height: 68px; }
+  }
+
+  // Avenue (800 × 22, inclinée de −9°) et rue (18 × 280, inclinée de 15°) :
+  // positions recalculées depuis le centre des formes de la maquette.
+  &__avenue {
+    left: -13px; top: 49px;
+    width: 120%; height: 22px; // 800 px dans la maquette : on couvre toute largeur
+    transform-origin: 400px 11px; // rotation autour du centre de la forme d'origine
+    background: $blanc;
+    transform: rotate(-9deg);
+  }
+
+  &__rue {
+    left: 124px; top: -13px;
+    width: 18px; height: 280px;
+    background: $blanc;
+    transform: rotate(15deg);
+  }
+
+  &__nom-rue {
+    left: 20px; top: 120px;
+    font: 400 10px/normal $police;
+    color: $encre-attenuee;
+  }
+
+  // Le repère est à ~44 % de la largeur sur desktop comme sur mobile.
+  &__repere {
+    left: 44%; top: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px; height: 40px;
+    border-radius: $rayon-pilule;
+    background: $primaire;
+  }
+
+  &__nom-hotel {
+    left: 44%; top: 118px;
+    font: 600 12px/normal $police;
+    color: $encre;
+  }
+
+  &__legende {
+    left: 16px; top: 200px;
+    font: 400 9px/normal $police;
+    color: $encre-attenuee;
+  }
+}
+
+// --- Récapitulatif de réservation -------------------------------------------
+.recapitulatif {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+  padding: 28px;
+  border: 1px solid $bordure;
+  border-radius: $rayon-grand;
+  background: $blanc;
+  box-shadow: $ombre-carte;
+
+  @include mobile { padding: 20px; }
+
+  &__photo {
+    display: block;
+    width: 100%;
+    height: 160px;
+    border-radius: $rayon-moyen;
+    object-fit: cover;
+    @include mobile { height: 150px; }
+  }
+
+  &__hotel {
+    font: 600 23px/1.15 $police;
+    letter-spacing: -0.7px;
+  }
+
+  &__chambre {
+    font: 400 13px/1.5 $police;
+    color: $encre-attenuee;
+  }
+
+  // Desktop : « dates · nuits · voyageurs » sur une ligne ; mobile : deux lignes.
+  &__dates {
+    font: 400 13px/1.5 $police;
+  }
+
+  @include mobile {
+    &__point { display: none; }
+    &__duree { display: block; }
+  }
+
+  &__ligne {
+    display: flex;
+    justify-content: space-between;
+    font: 400 13px/1.5 $police;
+
+    span:first-child { color: $encre-attenuee; }
+  }
+
+  &__total {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    font: 600 15px/1.5 $police;
+  }
+
+  &__montant {
+    font-size: 32px;
+    line-height: normal;
+  }
+
+  &__mention,
+  &__securite {
+    font: 400 11px/1.5 $police;
+    color: $encre-attenuee;
+  }
+
+  &__complet {
+    font: 600 13px/1.5 $police;
+    color: $premium-texte;
+  }
+
+  &__securite {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
