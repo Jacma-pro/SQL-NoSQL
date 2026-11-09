@@ -1,0 +1,65 @@
+// Styles du squelette. Une couleur par état de chambre.
+$couleur-propre: #2e7d32;
+$couleur-sale: #c62828;
+$couleur-maintenance: #ef6c00;
+$fond-panneau: #1e1e1e;
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  color: #222;
+  background: #fafafa;
+}
+
+// Contenu à gauche, panneau SQL à droite.
+.page {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  min-height: 100vh;
+}
+
+main {
+  padding: 1.5rem;
+}
+
+table {
+  margin-top: 1rem;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 0.4rem 0.8rem;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+  }
+}
+
+.etat {
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
+  color: #fff;
+
+  &--propre { background: $couleur-propre; }
+  &--sale { background: $couleur-sale; }
+  &--maintenance { background: $couleur-maintenance; }
+}
+
+.erreur {
+  color: $couleur-sale;
+}
+
+.panneau-sql {
+  padding: 1rem;
+  background: $fond-panneau;
+  color: #eee;
+  font-size: 0.9rem;
+
+  pre {
+    white-space: pre-wrap;
+    color: #9cdcfe;
+  }
+
+  code {
+    color: #ce9178;
+  }
+}

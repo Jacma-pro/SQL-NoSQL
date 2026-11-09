@@ -8,3 +8,6 @@ CLAUDE.md
 
 # Dépendances
 node_modules/
+
+# Résultat de `vite build`
+dist/

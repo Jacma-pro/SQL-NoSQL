@@ -1,0 +1,9 @@
+{
+  "name": "hotel-reception",
+  "private": true,
+  "description": "Lance la base, l'API et le front via Docker Compose",
+  "scripts": {
+    "dev": "docker compose up --build",
+    "stop": "docker compose down"
+  }
+}

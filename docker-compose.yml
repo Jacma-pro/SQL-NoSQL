@@ -1,0 +1,70 @@
+# Environnement de développement local : base PostgreSQL + API + front.
+# Lancement : `docker compose up --build` (ou `npm run dev` à la racine).
+#
+# Les mots de passe viennent du fichier .env à la racine (non versionné),
+# à créer en copiant .env.example.
+
+services:
+  # --- Base PostgreSQL ---------------------------------------------------------
+  db:
+    image: postgres:16 # même version que celle utilisée pour tester la phase 1
+    environment:
+      POSTGRES_DB: hotel
+      POSTGRES_USER: postgres # super-utilisateur : sert UNIQUEMENT à l'initialisation
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?à définir dans .env}
+      HOTEL_API_PASSWORD: ${HOTEL_API_PASSWORD:?à définir dans .env} # lu par 10_role_api.sh
+    volumes:
+      # Scripts exécutés par ordre alphabétique, UNIQUEMENT au premier démarrage
+      # (quand le volume pgdata est vide). Pour rejouer : `docker compose down -v`.
+      - ./sql/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ./sql/02_seed.sql:/docker-entrypoint-initdb.d/02_seed.sql:ro
+      - ./docker/postgres/10_role_api.sh:/docker-entrypoint-initdb.d/10_role_api.sh:ro
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5433:5432" # 5433 côté machine pour ne pas gêner un PostgreSQL déjà installé
+    healthcheck:
+      # -h 127.0.0.1 : pendant l'initialisation, Postgres n'écoute pas en TCP,
+      # donc la base n'est déclarée « prête » qu'une fois les scripts terminés.
+      test: ["CMD", "pg_isready", "-h", "127.0.0.1", "-U", "postgres", "-d", "hotel"]
+      interval: 3s
+      retries: 20
+
+  # --- API Express -------------------------------------------------------------
+  api:
+    image: node:22-alpine
+    working_dir: /app
+    command: sh -c "npm install && npm run dev"
+    environment:
+      # Variables lues directement par la librairie pg (pas besoin de dotenv).
+      PGHOST: db
+      PGPORT: 5432
+      PGDATABASE: hotel
+      PGUSER: hotel_api # rôle limité, jamais le super-utilisateur
+      PGPASSWORD: ${HOTEL_API_PASSWORD}
+      PORT: 3000
+    volumes:
+      - ./api:/app
+      - /app/node_modules # node_modules reste dans le conteneur (versions Linux)
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # --- Front React (Vite) ------------------------------------------------------
+  web:
+    image: node:22-alpine
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    environment:
+      API_URL: http://api:3000 # cible du proxy /api dans vite.config.js
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+    ports:
+      - "127.0.0.1:5173:5173"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
