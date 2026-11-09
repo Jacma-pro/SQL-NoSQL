@@ -8,6 +8,7 @@ import FicheChambre from './public/FicheChambre.jsx';
 import PageIntrouvable from './public/PageIntrouvable.jsx';
 import MiseEnPageReception from './reception/MiseEnPageReception.jsx';
 import TableauDeBord from './reception/TableauDeBord.jsx';
+import Sejours from './reception/Sejours.jsx';
 import './styles/main.scss';
 
 // Plan des écrans. Chaque interface a sa mise en page (route parente) :
@@ -26,7 +27,8 @@ createRoot(document.getElementById('root')).render(
 
         <Route path="/reception" element={<MiseEnPageReception />}>
           <Route index element={<TableauDeBord />} />
-          {/* Séjours, Fiche client, Direction : écrans suivants de la maquette. */}
+          <Route path="sejours" element={<Sejours />} />
+          {/* Fiche client, Direction : écrans suivants de la maquette. */}
           <Route path="*" element={<PageIntrouvable />} />
         </Route>
       </Routes>

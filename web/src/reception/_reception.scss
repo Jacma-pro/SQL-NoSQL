@@ -412,3 +412,236 @@
     gap: 8px;
   }
 }
+
+// ============================================================================
+// Écran Séjours (maquette : Séjours · Réception)
+// ============================================================================
+
+// --- Champ de formulaire de la réception (libellé + cadre de 48 px) ---------
+.champ {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0; // aussi utilisé sur un <fieldset>
+
+  &__libelle {
+    padding: 0;
+    font: 600 12px/normal $police;
+    color: $encre;
+  }
+
+  // <legend> ignore le `gap` du fieldset : on remet l'espace à la main.
+  legend.champ__libelle { margin-bottom: 7px; }
+
+  &__valeur {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: $hauteur-controle;
+    padding: 0 12px;
+    border: 1px solid $bordure;
+    border-radius: $rayon-petit;
+    background: $blanc;
+    font: 400 14px/normal $police;
+
+    &:focus-within { border-color: $primaire; }
+
+    input {
+      flex: 1 1 0;
+      min-width: 0;
+      padding: 0;
+      border: 0;
+      background: none;
+      font: inherit;
+      color: $encre;
+      outline: none;
+
+      &::placeholder { color: $encre; } // la maquette affiche le texte d'aide en foncé
+    }
+
+    // Dates : l'icône native du calendrier est invisible mais couvre tout le
+    // champ (un clic n'importe où ouvre le sélecteur) ; on garde celle de la maquette.
+    input[type='date'] {
+      position: relative;
+      cursor: pointer;
+
+      &::-webkit-calendar-picker-indicator {
+        position: absolute;
+        inset: 0;
+        width: auto;
+        height: auto;
+        opacity: 0;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+// --- Critères de recherche --------------------------------------------------
+.sejours {
+  &__criteres {
+    display: flex;
+    align-items: flex-end;
+    gap: 18px;
+
+    @include mobile {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+
+  &__recherche { flex: 1 1 0; }
+
+  &__periode {
+    flex: 0 0 370px;
+    @include tablette { flex-basis: 320px; }
+    @include mobile { flex-basis: auto; }
+  }
+
+  &__statuts {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+}
+
+// --- Tableau blanc arrondi (séjours, et plus tard historique client) --------
+.tableau {
+  overflow: hidden;
+  border: 1px solid $bordure;
+  border-radius: $rayon-moyen;
+  background: $blanc;
+
+  // Sur petit écran, le tableau défile horizontalement au lieu de se tasser.
+  &__defilement { overflow-x: auto; }
+
+  &__vide {
+    padding: 16px;
+    font: 400 13px/1.5 $police;
+    color: $encre-attenuee;
+  }
+
+  &__pied {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  &__resume {
+    font: 400 11px/1.5 $police;
+    color: $encre-attenuee;
+  }
+}
+
+.tableau-sejours {
+  width: 100%;
+  min-width: 860px;
+  border-collapse: collapse;
+  text-align: left;
+
+  // Largeurs des colonnes de la maquette (+ 12 px d'espacement), la dernière prend le reste.
+  th:nth-child(1) { width: 212px; }
+  th:nth-child(2) { width: 112px; }
+  th:nth-child(3) { width: 162px; }
+  th:nth-child(4) { width: 112px; }
+  th:nth-child(5) { width: 122px; }
+
+  th {
+    height: 43px;
+    padding: 0 6px;
+    background: $fond;
+    font: 600 10px/normal $police;
+    color: $encre-attenuee;
+  }
+
+  td {
+    height: 76px;
+    padding: 12px 6px;
+    border-bottom: 1px solid $bordure;
+    vertical-align: middle;
+  }
+
+  th:first-child,
+  td:first-child { padding-left: 16px; }
+
+  tr.est-surlignee td { background: $primaire-doux; }
+
+  p + p { margin-top: 4px; }
+
+  &__client {
+    font: 600 12px/normal $police;
+  }
+
+  &__reference {
+    font: 400 9px/normal $police-mono;
+    color: $encre-attenuee;
+
+    &.est-active { color: $primaire; }
+  }
+
+  &__chambre {
+    font: 600 13px/1.5 $police;
+  }
+
+  &__secondaire {
+    font: 400 10px/1.5 $police;
+    color: $encre-attenuee;
+  }
+
+  &__dates {
+    font: 400 11px/normal $police-mono;
+  }
+
+  &__depart { color: $encre-attenuee; }
+
+  &__reste {
+    font: 500 13px/normal $police-mono;
+    color: $succes-texte;
+
+    &.est-du { color: $premium-texte; } // il reste quelque chose à payer
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+// Petits liens texte des actions.
+.lien-danger,
+.lien-discret {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: 400 11px/1.5 $police;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.lien-danger { color: $danger-texte; }
+
+.lien-discret {
+  color: $encre-attenuee;
+  &:hover { color: $encre; }
+}
+
+// Ligne d'information sous un tableau (icône « i » + règle métier).
+.regle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 400 11px/1.5 $police;
+  color: $encre-attenuee;
+}

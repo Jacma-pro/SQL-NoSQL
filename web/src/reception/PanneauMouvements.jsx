@@ -5,14 +5,7 @@
 import Badge from '../composants/Badge.jsx';
 import Bouton from '../composants/Bouton.jsx';
 import { formaterDate, formaterPrix, nombreNuits } from '../format.js';
-
-// Libellés des statuts de séjour (codes de la base → texte affiché).
-const LIBELLES_STATUT = {
-  reserve: 'Réservé',
-  en_cours: 'En cours',
-  termine: 'Terminé',
-  annule: 'Annulé',
-};
+import { ACTION_PHASE_3, STATUTS_SEJOUR } from './statutsSejour.js';
 
 export default function PanneauMouvements({ type, mouvements }) {
   const arrivee = type === 'arrivee';
@@ -47,14 +40,14 @@ export default function PanneauMouvements({ type, mouvements }) {
                 petit
                 variante={arrivee ? 'primaire' : 'secondaire'}
                 disabled
-                title="Disponible avec les procédures SQL check_in / check_out (phase 3)"
+                title={ACTION_PHASE_3}
               >
                 {arrivee ? 'Check-in' : 'Check-out'}
               </Bouton>
             </div>
 
             <div className="mouvement__badges">
-              <Badge variante="info">{LIBELLES_STATUT[m.statut]}</Badge>
+              <Badge variante={STATUTS_SEJOUR[m.statut].badge}>{STATUTS_SEJOUR[m.statut].libelle}</Badge>
               <Badge variante="succes">Payé · {formaterPrix(m.paye)}</Badge>
               <Badge variante={m.reste > 0 ? 'avertissement' : 'neutre'}>Reste {formaterPrix(m.reste)}</Badge>
             </div>
