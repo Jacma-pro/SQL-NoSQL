@@ -1,41 +1,107 @@
-// Styles du squelette. Une couleur par état de chambre.
-$couleur-propre: #2e7d32;
-$couleur-sale: #c62828;
-$couleur-maintenance: #ef6c00;
+// Point d'entrée des styles : base commune, puis styles par interface.
+@use 'tokens' as *;
+@use '../composants/composants';
+@use '../public/public';
+@use '../reception/reception';
+
+// --- Base commune -----------------------------------------------------------
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
-  color: #222;
-  background: #fafafa;
+  font-family: $police;
+  color: $encre;
+  background: $fond;
+  -webkit-font-smoothing: antialiased;
 }
 
-main {
+h1, h2, h3, p, ul {
+  margin: 0;
+}
+
+img {
+  max-width: 100%;
+}
+
+// <picture> (composant Photo) ne doit pas créer de boîte à lui seul :
+// l'<img> qu'il contient se dimensionne directement par rapport à son cadre.
+picture {
+  display: contents;
+}
+
+// Sinon, avec `display: contents`, <source> devient un élément (vide) des
+// mises en page flex et décale les photos d'un `gap`. Le navigateur choisit
+// toujours la bonne source : ce choix ne dépend pas du CSS.
+picture > source {
+  display: none;
+}
+
+.separateur {
+  width: 100%;
+  height: 1px;
+  margin: 0;
+  border: 0;
+  background: $bordure;
+}
+
+// Texte lu par les lecteurs d'écran mais invisible à l'écran
+// (ex. libellé « Établissement » du sélecteur de la réception).
+.visuellement-cache {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+// Texte réservé à une taille d'écran (libellés longs / courts).
+.desktop-seulement {
+  @include mobile { display: none; }
+}
+.mobile-seulement {
+  display: none;
+  @include mobile { display: inline; }
+}
+
+// Surtitre bleu en capitales (« LE BON ENDROIT, TOUT SIMPLEMENT », « GRENOBLE »…).
+.surtitre {
+  font: 700 11px/normal $police;
+  letter-spacing: 1.8px;
+  color: $primaire;
+}
+
+// --- Squelette réception (phase 2), en attendant les écrans de la maquette ---
+.squelette {
   padding: 1.5rem;
-}
 
-table {
-  margin-top: 1rem;
-  border-collapse: collapse;
+  table {
+    margin-top: 1rem;
+    border-collapse: collapse;
 
-  th,
-  td {
-    padding: 0.4rem 0.8rem;
-    border-bottom: 1px solid #ddd;
-    text-align: left;
+    th,
+    td {
+      padding: 0.4rem 0.8rem;
+      border-bottom: 1px solid $bordure;
+      text-align: left;
+    }
   }
-}
 
-.etat {
-  padding: 0.1rem 0.5rem;
-  border-radius: 4px;
-  color: #fff;
+  .etat {
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    color: $blanc;
 
-  &--propre { background: $couleur-propre; }
-  &--sale { background: $couleur-sale; }
-  &--maintenance { background: $couleur-maintenance; }
-}
+    &--propre { background: #2e7d32; }
+    &--sale { background: #c62828; }
+    &--maintenance { background: #ef6c00; }
+  }
 
-.erreur {
-  color: $couleur-sale;
+  .erreur {
+    color: #c62828;
+  }
 }
