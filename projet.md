@@ -37,7 +37,7 @@ Une application de **réception d'hôtel**. L'utilisateur ne tape jamais de SQL 
 
 ## Modèle de données (MCD et MLD dans le FigJam « SQL »)
 
-- `categorie` (id, libelle, type_salle_eau [complete/simple], tarif_nuit)
+- `categorie` (id, libelle, description, tarif_nuit) : Économique, Standard, Confort, Suite…
 - `chambre` (numero, etage, etat [propre/sale/maintenance], categorie_id → categorie, hotel_id → hotel)
 - `client` (id, nom, prenom, email, telephone, supprime_le) → **soft delete**
 - `employe` (id, nom, prenom, poste, salaire, hotel_id → hotel, responsable_id → employe)

@@ -1,0 +1,164 @@
+-- -------------------------------------------------------------
+-- 1. Tables sans clé étrangère
+-- -------------------------------------------------------------
+
+CREATE TABLE categorie (
+  id_categorie INT GENERATED ALWAYS AS IDENTITY,
+  libelle VARCHAR(50) NOT NULL,
+  description TEXT,
+  tarif_nuit NUMERIC(10,2) NOT NULL,
+  CONSTRAINT pk_categorie PRIMARY KEY (id_categorie),
+  CONSTRAINT uq_categorie_libelle UNIQUE (libelle),
+  CONSTRAINT chk_categorie_tarif CHECK (tarif_nuit > 0)
+);
+
+CREATE TABLE client (
+  id_client INT GENERATED ALWAYS AS IDENTITY,
+  nom VARCHAR(100) NOT NULL,
+  prenom VARCHAR(100) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  telephone VARCHAR(20),
+  supprime_le TIMESTAMPTZ, -- NULL = client actif
+  CONSTRAINT pk_client PRIMARY KEY (id_client),
+  CONSTRAINT uq_client_email UNIQUE (email)
+);
+
+CREATE TABLE prestation (
+  id_prestation INT GENERATED ALWAYS AS IDENTITY,
+  libelle VARCHAR(100) NOT NULL,
+  prix_unitaire NUMERIC(10,2) NOT NULL,
+  CONSTRAINT pk_prestation PRIMARY KEY (id_prestation),
+  CONSTRAINT uq_prestation_libelle UNIQUE (libelle),
+  CONSTRAINT chk_prestation_prix CHECK (prix_unitaire >= 0)
+);
+
+
+-- -------------------------------------------------------------
+-- 2. HOTEL et EMPLOYE (références croisées)
+-- -------------------------------------------------------------
+
+CREATE TABLE hotel (
+  id_hotel INT GENERATED ALWAYS AS IDENTITY,
+  nom VARCHAR(100) NOT NULL,
+  adresse VARCHAR(255) NOT NULL,
+  id_directeur INT,
+  CONSTRAINT pk_hotel PRIMARY KEY (id_hotel),
+  CONSTRAINT uq_hotel_directeur UNIQUE (id_directeur)
+);
+
+CREATE TABLE employe (
+  id_employe INT GENERATED ALWAYS AS IDENTITY,
+  nom VARCHAR(100) NOT NULL,
+  prenom VARCHAR(100) NOT NULL,
+  poste VARCHAR(50) NOT NULL,
+  salaire NUMERIC(10,2) NOT NULL,
+  id_hotel INT NOT NULL,
+  id_responsable INT, -- NULL = pas de responsable (le directeur)
+  CONSTRAINT pk_employe PRIMARY KEY (id_employe),
+  CONSTRAINT fk_employe_hotel FOREIGN KEY (id_hotel) REFERENCES hotel(id_hotel) ON DELETE RESTRICT,
+  CONSTRAINT fk_employe_responsable FOREIGN KEY (id_responsable) REFERENCES employe(id_employe) ON DELETE RESTRICT,
+  CONSTRAINT chk_employe_salaire CHECK (salaire > 0),
+  CONSTRAINT chk_employe_responsable CHECK (id_responsable <> id_employe)
+);
+
+ALTER TABLE hotel
+  ADD CONSTRAINT fk_hotel_directeur
+  FOREIGN KEY (id_directeur) REFERENCES employe(id_employe) ON DELETE RESTRICT;
+
+
+-- -------------------------------------------------------------
+-- 3. CHAMBRE
+-- -------------------------------------------------------------
+
+CREATE TABLE chambre (
+  numero INT NOT NULL,
+  etage SMALLINT NOT NULL,
+  etat VARCHAR(15) NOT NULL DEFAULT 'propre',
+  id_categorie INT NOT NULL,
+  id_hotel INT NOT NULL,
+  CONSTRAINT pk_chambre PRIMARY KEY (numero),
+  CONSTRAINT fk_chambre_categorie FOREIGN KEY (id_categorie) REFERENCES categorie(id_categorie) ON DELETE RESTRICT,
+  CONSTRAINT fk_chambre_hotel FOREIGN KEY (id_hotel) REFERENCES hotel(id_hotel) ON DELETE RESTRICT,
+  CONSTRAINT chk_chambre_numero CHECK (numero > 0),
+  CONSTRAINT chk_chambre_etat CHECK (etat IN ('propre', 'sale', 'maintenance'))
+);
+
+
+-- -------------------------------------------------------------
+-- 4. SEJOUR
+-- -------------------------------------------------------------
+-- Le refus des séjours qui se chevauchent sur une même chambre est
+-- géré par un trigger (04_triggers.sql).
+
+CREATE TABLE sejour (
+  id_sejour INT GENERATED ALWAYS AS IDENTITY,
+  id_client INT NOT NULL,
+  numero_chambre INT NOT NULL,
+  date_debut DATE NOT NULL,
+  date_fin DATE NOT NULL,
+  statut VARCHAR(20) NOT NULL DEFAULT 'reserve',
+  CONSTRAINT pk_sejour PRIMARY KEY (id_sejour),
+  CONSTRAINT fk_sejour_client FOREIGN KEY (id_client) REFERENCES client(id_client) ON DELETE RESTRICT,
+  CONSTRAINT fk_sejour_chambre FOREIGN KEY (numero_chambre) REFERENCES chambre(numero) ON DELETE RESTRICT,
+  CONSTRAINT chk_sejour_dates CHECK (date_fin > date_debut),
+  CONSTRAINT chk_sejour_statut CHECK (statut IN ('reserve', 'en_cours', 'termine', 'annule'))
+);
+
+
+-- -------------------------------------------------------------
+-- 5. Tables rattachées au séjour, à la chambre et aux employés
+-- -------------------------------------------------------------
+
+-- Association N:M SEJOUR — PRESTATION. La date fait partie de la clé :
+-- un même séjour peut prendre la même prestation plusieurs jours.
+CREATE TABLE consommer (
+  id_sejour INT NOT NULL,
+  id_prestation INT NOT NULL,
+  date_conso DATE NOT NULL DEFAULT CURRENT_DATE,
+  quantite INT NOT NULL DEFAULT 1,
+  CONSTRAINT pk_consommer PRIMARY KEY (id_sejour, id_prestation, date_conso),
+  CONSTRAINT fk_consommer_sejour FOREIGN KEY (id_sejour) REFERENCES sejour(id_sejour) ON DELETE RESTRICT,
+  CONSTRAINT fk_consommer_prestation FOREIGN KEY (id_prestation) REFERENCES prestation(id_prestation) ON DELETE RESTRICT,
+  CONSTRAINT chk_consommer_quantite CHECK (quantite > 0)
+);
+
+CREATE TABLE paiement (
+  id_paiement INT GENERATED ALWAYS AS IDENTITY,
+  id_sejour INT NOT NULL,
+  montant NUMERIC(10,2) NOT NULL,
+  mode VARCHAR(10) NOT NULL,
+  date_paiement TIMESTAMPTZ NOT NULL DEFAULT now(),
+  CONSTRAINT pk_paiement PRIMARY KEY (id_paiement),
+  CONSTRAINT fk_paiement_sejour FOREIGN KEY (id_sejour) REFERENCES sejour(id_sejour) ON DELETE RESTRICT,
+  CONSTRAINT chk_paiement_montant CHECK (montant > 0),
+  CONSTRAINT chk_paiement_mode CHECK (mode IN ('cb', 'especes', 'virement'))
+);
+
+-- Association N:M CHAMBRE — EMPLOYE (ménage et maintenance).
+CREATE TABLE intervention (
+  id_intervention INT GENERATED ALWAYS AS IDENTITY,
+  numero_chambre INT NOT NULL,
+  id_employe INT NOT NULL,
+  type VARCHAR(15) NOT NULL,
+  date_intervention DATE NOT NULL DEFAULT CURRENT_DATE,
+  statut VARCHAR(10) NOT NULL DEFAULT 'a_faire',
+  CONSTRAINT pk_intervention PRIMARY KEY (id_intervention),
+  CONSTRAINT fk_intervention_chambre FOREIGN KEY (numero_chambre) REFERENCES chambre(numero) ON DELETE RESTRICT,
+  CONSTRAINT fk_intervention_employe FOREIGN KEY (id_employe) REFERENCES employe(id_employe) ON DELETE RESTRICT,
+  CONSTRAINT chk_intervention_type CHECK (type IN ('menage', 'maintenance')),
+  CONSTRAINT chk_intervention_statut CHECK (statut IN ('a_faire', 'terminee'))
+);
+
+
+-- -------------------------------------------------------------
+-- 6. Index
+-- -------------------------------------------------------------
+-- PostgreSQL indexe automatiquement les PK et les UNIQUE, mais pas les
+-- clés étrangères. On indexe les colonnes les plus utilisées en recherche.
+
+-- Recherche des chambres libres sur une période (requête la plus fréquente).
+CREATE INDEX idx_sejour_chambre_dates ON sejour (numero_chambre, date_debut, date_fin);
+-- Recherche d'un client par son nom à la réception.
+CREATE INDEX idx_client_nom ON client (nom);
+-- Historique des séjours d'un client.
+CREATE INDEX idx_sejour_client ON sejour (id_client);
