@@ -1,6 +1,8 @@
 // Écran du squelette (phase 2) : choisir un hôtel et voir ses chambres.
 // Sert surtout à prouver la chaîne complète base → API → front.
+// Accessible sur /reception, en attendant les écrans réception de la maquette.
 import { useEffect, useState } from 'react';
+import { appelerApi as appelerApiPartage } from './api.js';
 
 // La base stocke des codes sans accent ; l'écran affiche des libellés lisibles.
 const LIBELLES_ETAT = {
@@ -15,13 +17,10 @@ export default function App() {
   const [chambres, setChambres] = useState([]);
   const [erreur, setErreur] = useState(null);
 
-  // Appelle l'API et renvoie les données (ou lève une erreur lisible).
-  async function appelerApi(url) {
+  // Même accès à l'API que le site public (src/api.js) : mêmes données.
+  function appelerApi(url) {
     setErreur(null);
-    const reponse = await fetch(url);
-    const corps = await reponse.json();
-    if (!reponse.ok) throw new Error(corps.erreur || `Erreur ${reponse.status}`);
-    return corps.data;
+    return appelerApiPartage(url);
   }
 
   // Au chargement : liste des hôtels.
@@ -43,7 +42,7 @@ export default function App() {
   }
 
   return (
-    <main>
+    <main className="squelette">
       <h1>Hôtel — Réception</h1>
 
       <label>

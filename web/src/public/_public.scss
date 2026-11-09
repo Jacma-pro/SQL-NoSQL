@@ -1,0 +1,548 @@
+// Styles du site public. Toutes les valeurs viennent de la maquette
+// (Accueil · Desktop 1440 px et Accueil · Mobile 390 px).
+@use '../styles/tokens' as *;
+
+// Marges latérales communes à toutes les bandes de la page.
+@mixin marges-laterales {
+  padding-left: $marge-desktop;
+  padding-right: $marge-desktop;
+  @include tablette {
+    padding-left: $marge-tablette;
+    padding-right: $marge-tablette;
+  }
+  @include mobile {
+    padding-left: $marge-mobile;
+    padding-right: $marge-mobile;
+  }
+}
+
+.site-public__erreur {
+  @include marges-laterales;
+  padding-top: 24px;
+  color: $premium-texte;
+}
+
+// --- Navigation -------------------------------------------------------------
+.navigation-publique {
+  @include marges-laterales;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 88px;
+  background: $blanc;
+
+  @include mobile { height: 72px; }
+
+  &__liens {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+
+    a:not(.bouton),
+    .navigation-publique__langue {
+      font: 400 14px/1.5 $police;
+      color: $encre;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+  }
+
+  // Bouton « menu » : uniquement sur mobile.
+  &__menu {
+    display: none;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  @include mobile {
+    &__menu { display: block; }
+
+    // Les liens deviennent un panneau déroulant sous la barre.
+    &__liens {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+      padding: 16px $marge-mobile 24px;
+      background: $blanc;
+      border-top: 1px solid $bordure;
+      box-shadow: $ombre-carte;
+
+      &.est-ouvert { display: flex; }
+    }
+  }
+}
+
+// --- Héros (« Invitation à l’escapade ») ------------------------------------
+.heros {
+  @include marges-laterales;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 740px;
+  padding-top: 110px;
+  padding-bottom: 44px;
+  overflow: hidden;
+  background: $encre;
+  color: $blanc;
+
+  @include mobile {
+    min-height: 815px;
+    padding-top: 56px;
+    padding-bottom: 24px;
+  }
+
+  // La photo et le voile remplissent tout le héros, derrière le contenu.
+  &__photo,
+  &__voile {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  &__photo { object-fit: cover; }
+
+  &__voile {
+    background: linear-gradient(to right, rgba(15, 23, 42, 0.79), rgba(15, 23, 42, 0.09));
+  }
+
+  &__promesse {
+    position: relative; // passe au-dessus de la photo
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 780px;
+  }
+
+  &__surtitre {
+    font: 600 11px/normal $police;
+    letter-spacing: 2.8px;
+  }
+
+  &__titre {
+    font: 600 64px/1.08 $police;
+    letter-spacing: -2px;
+    @include tablette { font-size: 52px; }
+    @include mobile { font-size: 39px; }
+  }
+
+  &__texte {
+    font: 400 18px/1.6 $police;
+    @include mobile { font-size: 15px; }
+  }
+
+  // Le formulaire est poussé en bas du héros.
+  .recherche {
+    margin-top: auto;
+  }
+}
+
+// --- Formulaire de recherche ------------------------------------------------
+.recherche {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  border-radius: $rayon-grand;
+  background: $blanc;
+  box-shadow: $ombre-carte;
+  color: $encre;
+
+  // Desktop : arrivée et départ sont deux critères comme les autres de la ligne.
+  &__dates { display: contents; }
+
+  // Desktop : au-dessus du formulaire (en dessous, le héros le couperait).
+  &__erreur {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    margin-bottom: 8px;
+    padding: 6px 12px;
+    border-radius: $rayon-petit;
+    background: $premium-fond;
+    color: $premium-texte;
+    font: 600 12px/normal $police;
+  }
+
+  @include tablette {
+    flex-wrap: wrap;
+    .critere { flex-basis: calc(50% - 10px); }
+    .bouton { width: 100%; }
+  }
+
+  @include mobile {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 16px;
+
+    &__dates {
+      display: flex;
+      gap: 10px;
+
+      // Arrivée et départ se partagent la ligne à parts égales.
+      .critere { flex: 1 1 0; }
+    }
+
+    .critere { flex-basis: auto; }
+
+    &__erreur {
+      position: static;
+      margin-bottom: 0;
+    }
+  }
+}
+
+.critere {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+
+  &__libelle {
+    font: 400 11px/normal $police;
+    color: $encre-attenuee;
+  }
+
+  &__valeur {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+
+  // Desktop : le champ ressemble à une simple valeur (pas de cadre).
+  select,
+  input {
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: 600 14px/1.5 $police;
+    color: $encre;
+    appearance: none;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline: 2px solid $primaire;
+      outline-offset: 4px;
+      border-radius: 2px;
+    }
+  }
+
+  // L'icône native du calendrier est rendue invisible mais couvre tout le
+  // champ : un clic n'importe où ouvre le sélecteur de date.
+  input[type='date']::-webkit-calendar-picker-indicator {
+    position: absolute;
+    inset: 0;
+    width: auto;
+    height: auto;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  // Mobile : vrais champs encadrés de 48 px, libellé foncé en gras.
+  @include mobile {
+    flex: none;
+    gap: 7px;
+
+    &__libelle {
+      font: 600 12px/normal $police;
+      color: $encre;
+    }
+
+    &__valeur {
+      gap: 10px;
+      height: $hauteur-controle;
+      padding: 0 12px;
+      border: 1px solid $bordure;
+      border-radius: $rayon-petit;
+      background: $blanc;
+    }
+
+    select,
+    input {
+      font-weight: 400;
+    }
+
+    // Sur mobile, la maquette n'a pas d'icône dans les champs de date.
+    &__icone-date { display: none; }
+  }
+}
+
+// --- Sections ---------------------------------------------------------------
+.section {
+  @include marges-laterales;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding-top: 72px;
+  padding-bottom: 72px;
+
+  @include mobile {
+    padding-top: 44px;
+    padding-bottom: 44px;
+  }
+
+  // « Nos chambres » suit « Nos établissements » : petit espace en haut.
+  &--chambres {
+    padding-top: 12px;
+    @include mobile { padding-top: 12px; }
+  }
+}
+
+.introduction {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+
+  &__titres {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__titre {
+    font: 600 40px/1.15 $police;
+    letter-spacing: -0.7px;
+    color: $encre;
+    @include mobile { font-size: 30px; }
+  }
+
+  &__texte {
+    font: 400 15px/1.5 $police;
+    color: $encre-attenuee;
+  }
+
+  &__aside {
+    font: 400 12px/1.5 $police;
+    color: $encre-attenuee;
+    white-space: nowrap;
+    // Absent de la maquette mobile.
+    @include mobile { display: none; }
+  }
+}
+
+// --- Cartes établissement ---------------------------------------------------
+.grille-etablissements {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px;
+
+  @include mobile {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+.carte-etablissement {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  color: inherit;
+  text-decoration: none;
+
+  &__vue {
+    position: relative;
+    height: 350px;
+    overflow: hidden;
+    border-radius: $rayon-grand;
+    @include mobile { height: 260px; }
+  }
+
+  &__photo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+  }
+
+  &:hover &__photo { transform: scale(1.02); }
+
+  &__badge {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+  }
+
+  &__presentation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  &__identite {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  &__nom {
+    font: 600 24px/1.15 $police;
+    letter-spacing: -0.7px;
+  }
+
+  &__adresse {
+    font: 400 13px/1.5 $police;
+    color: $encre-attenuee;
+  }
+}
+
+// --- Cartes chambre ---------------------------------------------------------
+.grille-chambres {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  align-items: start;
+
+  @include tablette { grid-template-columns: repeat(2, 1fr); }
+  @include mobile { grid-template-columns: 1fr; }
+}
+
+.carte-chambre {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid $bordure;
+  border-radius: $rayon-grand;
+  background: $blanc;
+  box-shadow: $ombre-carte;
+
+  &--premium { border-color: $premium-bordure; }
+
+  &__photo {
+    display: block;
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+    @include mobile { height: 225px; }
+  }
+
+  &__infos {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 18px;
+  }
+
+  &__entete {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__nom {
+    font: 600 19px/normal $police;
+  }
+
+  &__description {
+    font: 400 12px/1.5 $police;
+    color: $encre-attenuee;
+  }
+
+  &__tarif {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  &__prix {
+    font: 600 24px/normal $police;
+  }
+
+  &__unite {
+    font: 400 12px/1.5 $police;
+    color: $encre-attenuee;
+  }
+}
+
+// --- Engagements ------------------------------------------------------------
+.engagements {
+  @include marges-laterales;
+  display: flex;
+  gap: 60px;
+  padding-top: 32px;
+  padding-bottom: 32px;
+  background: $primaire-doux;
+
+  @include tablette { gap: 32px; }
+
+  @include mobile {
+    flex-direction: column;
+    gap: 24px;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+.engagement {
+  display: flex;
+  flex: 1 1 0;
+  align-items: flex-start;
+  gap: 14px;
+
+  &__titre {
+    font: 600 13px/1.5 $police;
+  }
+
+  &__texte {
+    margin-top: 4px;
+    font: 400 11px/1.5 $police;
+    color: $encre-attenuee;
+  }
+}
+
+// --- Pied de page -----------------------------------------------------------
+.pied-de-page {
+  @include marges-laterales;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-top: 32px;
+  padding-bottom: 32px;
+  background: $encre;
+  color: $encre-pale;
+
+  &__marque {
+    font: 600 18px/normal $police;
+    color: $blanc;
+  }
+
+  &__adresses {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0;
+    list-style: none;
+    font: 400 12px/1.5 $police;
+
+    // Desktop : « Adresse 1     |     Adresse 2 ».
+    li + li::before {
+      content: '|';
+      margin: 0 1.6em;
+    }
+
+    @include mobile {
+      flex-direction: column;
+      li + li::before { content: none; }
+    }
+  }
+
+  &__mentions {
+    font: 400 11px/1.5 $police;
+  }
+}

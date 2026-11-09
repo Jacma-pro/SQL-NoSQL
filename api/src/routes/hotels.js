@@ -5,10 +5,30 @@ import { query } from '../db.js';
 
 const router = Router();
 
-// GET /api/hotels : liste des hôtels
+// GET /api/hotels : liste des hôtels, avec le nombre de chambres libres ce soir.
+//
+// Une chambre est « disponible » si elle n'est pas en maintenance et
+// qu'aucun séjour non annulé ne couvre la nuit d'aujourd'hui
+// (date_debut <= aujourd'hui < date_fin : le jour de départ, la chambre est libre).
+// En phase 3, ce calcul sera remplacé par la fonction SQL chambres_libres().
 router.get('/', async (req, res) => {
   const { rows, sql } = await query(
-    'SELECT id_hotel, nom, adresse FROM hotel ORDER BY nom'
+    `SELECT h.id_hotel, h.nom, h.adresse,
+            COUNT(c.numero) FILTER (
+              WHERE c.etat <> 'maintenance'
+                AND NOT EXISTS (
+                  SELECT 1
+                    FROM sejour s
+                   WHERE s.numero_chambre = c.numero
+                     AND s.statut <> 'annule'
+                     AND s.date_debut <= CURRENT_DATE
+                     AND s.date_fin > CURRENT_DATE
+                )
+            )::int AS chambres_disponibles
+       FROM hotel h
+       LEFT JOIN chambre c ON c.id_hotel = h.id_hotel
+      GROUP BY h.id_hotel
+      ORDER BY h.id_hotel`
   );
   res.json({ data: rows, sql });
 });

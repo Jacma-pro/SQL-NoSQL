@@ -2,12 +2,14 @@
 import express from 'express';
 import routesSante from './routes/sante.js';
 import routesHotels from './routes/hotels.js';
+import routesCategories from './routes/categories.js';
 
 const app = express();
 app.use(express.json());
 
 app.use('/api/sante', routesSante);
 app.use('/api/hotels', routesHotels);
+app.use('/api/categories', routesCategories);
 
 // Gestionnaire d'erreurs : Express 5 y envoie automatiquement les erreurs des
 // routes async. Le détail reste dans les logs du serveur, le client ne reçoit

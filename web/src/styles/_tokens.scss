@@ -1,0 +1,48 @@
+// Valeurs reprises de la maquette Figma (« Parc & Belledonne »).
+// Partagées par le site public et la réception : toute couleur, rayon ou
+// espacement utilisé dans les styles doit venir d'ici.
+
+// --- Couleurs ---------------------------------------------------------------
+$encre: #0f172a;          // texte principal, fonds sombres (héros, pied de page)
+$encre-attenuee: #64748b; // textes secondaires
+$encre-pale: #94a3b8;     // textes sur fond sombre
+$bordure: #e2e8f0;        // bordures et séparateurs
+$fond: #f8fafc;           // fond de page
+$blanc: #ffffff;
+
+$primaire: #3b82f6;       // boutons, surtitres
+$primaire-fonce: #2563eb; // survol des boutons (non précisé dans la maquette)
+$primaire-doux: #eff6ff;  // bandeau des engagements
+
+$succes-fond: #f0fdf4;
+$succes-texte: #166534;
+$premium-fond: #fefce8;
+$premium-texte: #92400e;
+$premium-bordure: #eab308;
+
+// --- Typographie ------------------------------------------------------------
+$police: 'Inter', system-ui, sans-serif;
+
+// --- Formes -----------------------------------------------------------------
+$rayon-petit: 8px;   // boutons, champs
+$rayon-grand: 16px;  // cartes, photos
+$rayon-pilule: 100px; // badges
+$ombre-carte: 0 5px 18px rgba(15, 23, 42, 0.04);
+$hauteur-controle: 48px; // boutons et champs
+
+// --- Mise en page -----------------------------------------------------------
+// La maquette existe en 1440 px (marges de 80 px) et en 390 px (marges de 20 px).
+// La tablette n'est pas dessinée : on y prend des valeurs intermédiaires.
+$marge-desktop: 80px;
+$marge-tablette: 40px;
+$marge-mobile: 20px;
+
+$bp-mobile: 767px;    // jusqu'à cette largeur : version mobile
+$bp-tablette: 1199px; // jusqu'à cette largeur : version tablette
+
+@mixin mobile {
+  @media (max-width: $bp-mobile) { @content; }
+}
+@mixin tablette {
+  @media (max-width: $bp-tablette) { @content; }
+}
