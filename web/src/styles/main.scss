@@ -2,6 +2,7 @@
 @use 'tokens' as *;
 @use '../composants/composants';
 @use '../public/public';
+@use '../reception/reception';
 
 // --- Base commune -----------------------------------------------------------
 *,
@@ -45,6 +46,17 @@ picture > source {
   margin: 0;
   border: 0;
   background: $bordure;
+}
+
+// Texte lu par les lecteurs d'écran mais invisible à l'écran
+// (ex. libellé « Établissement » du sélecteur de la réception).
+.visuellement-cache {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 // Texte réservé à une taille d'écran (libellés longs / courts).

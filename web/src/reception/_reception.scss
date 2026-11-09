@@ -1,0 +1,414 @@
+// Styles de la réception. Valeurs de la maquette « Tableau de bord · Réception »
+// (dessinée en 1440 px uniquement : tablette et mobile sont des adaptations).
+@use '../styles/tokens' as *;
+
+// --- Cadre : barre latérale + espace de travail ------------------------------
+.reception {
+  display: flex;
+  min-height: 100vh;
+  background: $fond;
+
+  @include mobile { flex-direction: column; }
+
+  &__navigation {
+    position: sticky; // la barre reste visible quand on fait défiler l'écran
+    top: 0;
+    display: flex;
+    flex: 0 0 216px;
+    flex-direction: column;
+    gap: 34px;
+    height: 100vh;
+    padding: 30px 18px;
+    background: $encre;
+
+    // Mobile : bandeau horizontal en haut, liens défilants.
+    @include mobile {
+      position: static;
+      flex-basis: auto;
+      gap: 16px;
+      height: auto;
+      padding: 16px $marge-mobile;
+    }
+  }
+
+  &__liens {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    @include mobile {
+      flex-direction: row;
+      overflow-x: auto;
+    }
+  }
+
+  &__lien {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 46px;
+    padding: 0 12px;
+    border-radius: $rayon-petit;
+    font: 400 12px/normal $police;
+    color: $encre-pale;
+    text-decoration: none;
+    white-space: nowrap;
+
+    &:hover { color: $blanc; }
+
+    // Entrée de l'écran courant (classe ajoutée par NavLink).
+    &.active {
+      background: $primaire;
+      color: $blanc;
+      font-weight: 600;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $blanc;
+      outline-offset: 2px;
+    }
+  }
+
+  // Personne connectée, poussée en bas de la barre.
+  &__session {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: auto;
+
+    @include mobile { display: none; }
+  }
+
+  &__session-nom {
+    font: 600 12px/normal $police;
+    color: $blanc;
+  }
+
+  &__session-detail {
+    font: 400 11px/normal $police;
+    color: $encre-pale;
+  }
+
+  &__espace {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  // Bandeau blanc du haut : sélecteur d'établissement.
+  &__entete {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    height: 76px;
+    padding: 0 32px;
+    border-bottom: 1px solid $bordure;
+    background: $blanc;
+
+    @include mobile { padding: 0 $marge-mobile; }
+  }
+
+  &__etablissement {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+
+    select {
+      padding: 0;
+      border: 0;
+      background: none;
+      font: 600 14px/normal $police;
+      color: $encre;
+      appearance: none;
+      cursor: pointer;
+
+      &:focus-visible {
+        outline: 2px solid $primaire;
+        outline-offset: 4px;
+      }
+    }
+  }
+
+  &__adresse {
+    font: 400 12px/1.5 $police;
+    color: $encre-attenuee;
+    white-space: nowrap;
+    @include mobile { display: none; }
+  }
+
+  &__contenu {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 32px;
+
+    @include mobile { padding: 24px $marge-mobile; }
+  }
+
+  &__titre-page {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  &__titre {
+    font: 600 28px/1.15 $police;
+    letter-spacing: -0.7px;
+  }
+
+  &__sous-titre {
+    margin-top: 7px;
+    font: 400 12px/1.5 $police;
+    color: $encre-attenuee;
+  }
+}
+
+// --- Indicateurs du jour ----------------------------------------------------
+.indicateurs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+
+  @include tablette { grid-template-columns: repeat(2, 1fr); }
+}
+
+.indicateur {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px;
+  border: 1px solid $bordure;
+  border-radius: $rayon-moyen;
+  background: $blanc;
+
+  &__libelle {
+    font: 400 12px/1.5 $police;
+    color: $encre-attenuee;
+  }
+
+  &__valeur {
+    font: 600 30px/normal $police;
+    letter-spacing: -1px;
+  }
+
+  &__detail {
+    font: 400 11px/1.5 $police;
+    color: $encre-attenuee;
+  }
+}
+
+// --- Panneau blanc générique (plan, arrivées, départs) ----------------------
+.panneau {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+  padding: 22px;
+  border: 1px solid $bordure;
+  border-radius: $rayon-moyen;
+  background: $blanc;
+
+  &__titre {
+    font: 600 20px/1.15 $police;
+    letter-spacing: -0.7px;
+
+    &--moyen { font-size: 19px; }
+  }
+}
+
+// --- Plan des chambres ------------------------------------------------------
+.plan-chambres {
+  &__entete {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  &__legende {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+
+  &__etage {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    // Mobile : repère d'étage au-dessus, vignettes sur deux colonnes.
+    @include mobile {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+  }
+
+  &__repere {
+    display: flex;
+    flex: 0 0 60px;
+    flex-direction: column;
+    gap: 4px;
+
+    @include mobile {
+      grid-column: 1 / -1;
+      flex-direction: row;
+      align-items: baseline;
+      gap: 8px;
+    }
+  }
+
+  &__repere-libelle {
+    font: 400 10px/normal $police;
+    color: $encre-attenuee;
+  }
+
+  &__repere-numero {
+    font: 600 25px/normal $police;
+  }
+
+  &__selection {
+    font: 400 10px/1.5 $police;
+    color: $encre-attenuee;
+  }
+}
+
+// Vignette d'une chambre : fond coloré selon son état.
+.vignette {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  min-height: 115px;
+  padding: 13px;
+  border: 1px solid transparent;
+  border-radius: $rayon-moyen;
+  font: inherit;
+  color: $encre;
+  text-align: left;
+  cursor: pointer;
+
+  &--libre { background: $succes-fond; }
+  &--occupee { background: $primaire-doux; }
+  &--sale { background: $avertissement-fond; }
+  &--maintenance { background: $danger-fond; }
+
+  // Chambre sélectionnée : bordure bleue (comme la 203 de la maquette).
+  &[aria-pressed='true'] { border-color: $primaire; }
+
+  &:focus-visible {
+    outline: 2px solid $primaire;
+    outline-offset: 2px;
+  }
+
+  &__identification {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  &__numero {
+    font: 600 24px/normal $police;
+  }
+
+  &__categorie {
+    font: 600 11px/normal $police;
+    color: $encre-attenuee;
+
+    &--suite { color: $premium-texte; }
+  }
+
+  &__etat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font: 600 11px/normal $police;
+  }
+
+  &--libre &__etat { color: $succes-texte; }
+  &--occupee &__etat { color: $info-texte; }
+  &--sale &__etat { color: $premium-texte; }
+  &--maintenance &__etat { color: $danger-texte; }
+
+  &__detail {
+    font: 400 10px/normal $police;
+    color: $encre-attenuee;
+  }
+}
+
+// --- Arrivées et départs du jour ---------------------------------------------
+.mouvements-du-jour {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+
+  > * { flex: 1 1 0; min-width: 0; }
+
+  @include tablette {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.mouvements {
+  gap: 18px;
+
+  &__vide {
+    font: 400 13px/1.5 $police;
+    color: $encre-attenuee;
+  }
+}
+
+.mouvement {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  // Plusieurs mouvements : un trait les sépare.
+  & + & {
+    padding-top: 18px;
+    border-top: 1px solid $bordure;
+  }
+
+  &__ligne {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__reservation {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  &__client {
+    font: 600 14px/1.5 $police;
+  }
+
+  &__reference {
+    font: 400 11px/normal $police-mono;
+    color: $encre-attenuee;
+
+    &--arrivee { color: $primaire; }
+  }
+
+  &__dates {
+    font: 400 11px/1.5 $police;
+    color: $encre-attenuee;
+  }
+
+  &__badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}

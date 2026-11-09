@@ -6,11 +6,12 @@ import Accueil from './public/Accueil.jsx';
 import Resultats from './public/Resultats.jsx';
 import FicheChambre from './public/FicheChambre.jsx';
 import PageIntrouvable from './public/PageIntrouvable.jsx';
-import App from './App.jsx';
+import MiseEnPageReception from './reception/MiseEnPageReception.jsx';
+import TableauDeBord from './reception/TableauDeBord.jsx';
 import './styles/main.scss';
 
-// Plan des écrans. Les écrans publics partagent la même mise en page
-// (navigation + pied de page) grâce à la route parente sans `path`.
+// Plan des écrans. Chaque interface a sa mise en page (route parente) :
+// le site public (navigation + pied de page) et la réception (barre latérale).
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
@@ -22,8 +23,12 @@ createRoot(document.getElementById('root')).render(
           {/* Toute autre adresse : page introuvable, dans le cadre public. */}
           <Route path="*" element={<PageIntrouvable />} />
         </Route>
-        {/* Réception : squelette de la phase 2, en attendant ses écrans. */}
-        <Route path="/reception" element={<App />} />
+
+        <Route path="/reception" element={<MiseEnPageReception />}>
+          <Route index element={<TableauDeBord />} />
+          {/* Séjours, Fiche client, Direction : écrans suivants de la maquette. */}
+          <Route path="*" element={<PageIntrouvable />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   </StrictMode>

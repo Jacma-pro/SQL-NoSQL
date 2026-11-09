@@ -20,6 +20,9 @@ $succes-texte: #166534;
 $premium-fond: #fefce8;
 $premium-texte: #92400e;
 $premium-bordure: #eab308;
+$avertissement-fond: #fffbeb; // chambre « sale »
+$danger-fond: #fef2f2;        // chambre « maintenance »
+$danger-texte: #991b1b;
 
 // Plan de situation indicatif (fiche chambre)
 $plan-fond: #edf2f5;
@@ -28,6 +31,7 @@ $plan-parc: #dceadb;
 
 // --- Typographie ------------------------------------------------------------
 $police: 'Inter', system-ui, sans-serif;
+$police-mono: 'Roboto Mono', ui-monospace, monospace; // références de réservation
 
 // --- Formes -----------------------------------------------------------------
 $rayon-mini: 4px;    // cases à cocher, curseur de prix
