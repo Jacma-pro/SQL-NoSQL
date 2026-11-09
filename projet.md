@@ -37,16 +37,18 @@ Une application de **réception d'hôtel**. L'utilisateur ne tape jamais de SQL 
 
 ## Modèle de données (MCD et MLD dans le FigJam « SQL »)
 
-- `categorie` (id, libelle, description, tarif_nuit) : Économique, Standard, Confort, Suite…
-- `chambre` (numero, etage, etat [propre/sale/maintenance], categorie_id → categorie, hotel_id → hotel)
-- `client` (id, nom, prenom, email, telephone, supprime_le) → **soft delete**
-- `employe` (id, nom, prenom, poste, salaire, hotel_id → hotel, responsable_id → employe)
-- `hotel` (id, nom, adresse, directeur_id → employe)
-- `sejour` (id, client_id, chambre_numero, date_debut, date_fin, statut [reservé/en cours/terminé/annulé])
-- `prestation` (id, libelle, prix_unitaire) : petit-déjeuner, spa, parking…
-- `consommer` (sejour_id, prestation_id, date_conso, quantite) : clé primaire composée
-- `paiement` (id, sejour_id, montant, mode [CB/espèces/virement], date_paiement)
-- `intervention` (id, chambre_numero, employe_id, type [ménage/maintenance], date_intervention, statut [à faire/terminée])
+Conventions : clés en `id_<table>` (PK) et `id_<table référencée>` (FK), sauf la chambre identifiée par son `numero` (FK `numero_chambre`). Valeurs des listes sans accents ni espaces.
+
+- `categorie` (id_categorie, libelle, description, tarif_nuit) : Simple, Confort, Supérieure, Suite…
+- `chambre` (numero, etage, etat [propre/sale/maintenance], id_categorie → categorie, id_hotel → hotel)
+- `client` (id_client, nom, prenom, email, telephone, supprime_le) → **soft delete**
+- `employe` (id_employe, nom, prenom, poste, salaire, id_hotel → hotel, id_responsable → employe)
+- `hotel` (id_hotel, nom, adresse, id_directeur → employe)
+- `sejour` (id_sejour, id_client, numero_chambre, date_debut, date_fin, statut [reserve/en_cours/termine/annule])
+- `prestation` (id_prestation, libelle, prix_unitaire) : petit-déjeuner, spa, parking…
+- `consommer` (id_sejour, id_prestation, date_conso, quantite) : clé primaire composée
+- `paiement` (id_paiement, id_sejour, montant, mode [cb/especes/virement], date_paiement)
+- `intervention` (id_intervention, numero_chambre, id_employe, type [menage/maintenance], date_intervention, statut [a_faire/terminee])
 
 Contraintes à poser : `CHECK (date_fin > date_debut)`, `UNIQUE (email)`, `FOREIGN KEY` avec `ON DELETE RESTRICT`, `CHECK (tarif_nuit > 0)`, `CHECK (quantite > 0)`, `CHECK (montant > 0)`.
 
